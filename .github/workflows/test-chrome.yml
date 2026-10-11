@@ -1,0 +1,47 @@
+name: Test Chrome with Xvfb
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb xauth
+          npm ci
+
+      - name: Check Chrome
+        run: |
+          which google-chrome
+          google-chrome --version
+
+      - name: Run automation
+        env:
+          DEBUG: "true"
+        run: |
+          xvfb-run \
+            --auto-servernum \
+            --server-args="-screen 0 1920x1080x24" \
+            npx korail-secret-fetcher
+
+      - name: Upload debug artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-debug
+          path: |
+            output.json
+            debug/
+          if-no-files-found: warn
