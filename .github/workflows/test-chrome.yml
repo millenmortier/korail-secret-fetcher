@@ -27,15 +27,54 @@ jobs:
           which google-chrome
           google-chrome --version
 
+      - name: Debug Chrome startup
+        run: |
+          xvfb-run -a \
+            --server-args="-screen 0 1920x1080x24" \
+            bash -c '
+              echo "DISPLAY=$DISPLAY"
+
+              google-chrome \
+                --no-first-run \
+                --no-default-browser-check \
+                --user-data-dir=/tmp/chrome-debug-test \
+                --remote-debugging-port=9222 \
+                --enable-logging=stderr \
+                --v=0 \
+                about:blank \
+                > /tmp/chrome.log 2>&1 &
+
+              CHROME_PID=$!
+
+              sleep 5
+
+              echo "=== Chrome logs ==="
+              cat /tmp/chrome.log
+
+              echo "=== Chrome process ==="
+              ps -p "$CHROME_PID" -o pid,stat,args || true
+
+              echo "=== CDP endpoint ==="
+              curl -v --max-time 5 \
+                http://127.0.0.1:9222/json/version
+
+              RESULT=$?
+
+              kill "$CHROME_PID" 2>/dev/null || true
+              wait "$CHROME_PID" 2>/dev/null || true
+
+              exit "$RESULT"
+            '
+
       - name: Run automation
         env:
           DEBUG: "true"
         run: |
+          npm ci
           xvfb-run \
             --auto-servernum \
             --server-args="-screen 0 1920x1080x24" \
-          npm ci
-          npm start
+            npm start
 
       - name: Upload debug artifacts
         if: always()
