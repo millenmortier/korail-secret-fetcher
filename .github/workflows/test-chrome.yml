@@ -34,7 +34,8 @@ jobs:
           xvfb-run \
             --auto-servernum \
             --server-args="-screen 0 1920x1080x24" \
-            npx korail-secret-fetcher
+          npm ci
+          npm start
 
       - name: Upload debug artifacts
         if: always()
