@@ -1,0 +1,32 @@
+{
+  "name": "korail-secret-fetcher",
+  "version": "1.0.0",
+  "description": "Capture Korail web requests from Chrome/Chromium for development and debugging.",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist/"
+  ],
+  "bin": "dist/bin.js",
+  "scripts": {
+    "dev": "node src/bin.ts",
+    "start": "npm run build && node dist/bin.js",
+    "build": "tsc",
+    "lint": "oxlint",
+    "fmt": "oxfmt",
+    "prepack": "npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome-remote-interface": "^0.34.0",
+    "@types/node": "^24.19.2",
+    "oxfmt": "^0.72.0",
+    "oxlint": "^1.87.0",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.34.0"
+  }
+}

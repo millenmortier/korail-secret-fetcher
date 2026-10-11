@@ -1,0 +1,4 @@
+node_modules/
+__deprecated__*
+.DS_Store
+dist/
