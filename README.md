@@ -68,6 +68,19 @@ Useful project scripts:
 | `npm run lint`  | Run Oxlint.                      |
 | `npm run fmt`   | Format the project with Oxfmt.   |
 
+## Publishing to npm
+
+The GitHub Actions workflow at `.github/workflows/publish.yml` runs lint and build, then publishes the package with npm provenance. It runs when a `v*` tag is pushed; it can also be started manually from the repository's **Actions** tab.
+
+Before using the workflow:
+
+1. Create an npm automation/access token that can publish this package.
+2. Add it to the GitHub repository's **Settings → Secrets and variables → Actions** as `NPM_TOKEN`.
+3. Update the `version` in `package.json` and commit that change. The version must not already exist on npm.
+4. Push a version tag matching the package version, for example `v1.2.3` for version `1.2.3`.
+
+The workflow uses the tag to trigger publishing; it does not change the package version automatically. `workflow_dispatch` publishes the version currently in `package.json`, so use it only when that version is ready and has not already been published.
+
 ## Troubleshooting
 
 - **Browser not found:** Install Chrome/Chromium or set `CHROME_PATH`/`CHROMIUM_PATH` to its executable. If prompted, press Enter after installing the browser so discovery can run again.

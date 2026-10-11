@@ -1,6 +1,6 @@
 {
   "name": "korail-secret-fetcher",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Capture Korail web requests from Chrome/Chromium for development and debugging.",
   "type": "module",
   "main": "dist/index.js",

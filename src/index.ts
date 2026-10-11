@@ -12,6 +12,15 @@ import { stdin, stdout } from "node:process";
 const START_URL = "https://korail.com/global/eng/intro";
 const REQUEST_LOG = path.resolve(process.cwd(), "korail-requests.jsonl");
 const DEBUG_HOST = "127.0.0.1";
+const SECRET_VALUE_MIN_LENGTH = 100;
+
+function extractSecretPayload(url: URL): Record<string, string> {
+  const entry = [...url.searchParams.entries()].find(
+    ([key, value]) =>
+      key.length === 4 && value.length >= SECRET_VALUE_MIN_LENGTH,
+  );
+  return entry ? { [entry[0]]: entry[1] } : {};
+}
 
 function candidateBrowserPaths(): string[] {
   const envPath = process.env.CHROME_PATH ?? process.env.CHROMIUM_PATH;
@@ -205,6 +214,10 @@ export async function main(): Promise<void> {
         path: `${parsedUrl.pathname}${parsedUrl.search}`,
         url: request.url,
         body: request.postData ?? "",
+        secrets: {
+          path: parsedUrl.pathname,
+          payload: extractSecretPayload(parsedUrl),
+        },
       };
       const requestBodyReady = (async () => {
         if (!record.body && request.hasPostData) {
@@ -355,8 +368,11 @@ interface CapturedRequest {
   path: string;
   url: string;
   body: string;
+  secrets: {
+    path: string;
+    payload: Record<string, string>;
+  };
   responseBody?: string;
   responseBodyBase64Encoded?: boolean;
   responseBodyError?: string;
 }
-
